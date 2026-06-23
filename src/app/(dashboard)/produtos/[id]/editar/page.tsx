@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { prisma } from '@/lib/prisma'
 import { ProdutoForm } from '@/components/ProdutoForm'
+import { DeleteProdutoButton } from '@/components/DeleteProdutoButton'
 
 type Props = {
   params: Promise<{ id: string }>
@@ -48,7 +49,10 @@ export default async function EditarProdutoPage({ params }: Props) {
         <span className="text-sm text-foreground font-medium">Editar produto</span>
       </div>
 
-      <h1 className="text-2xl font-bold text-foreground">Editar produto</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-bold text-foreground">Editar produto</h1>
+        <DeleteProdutoButton id={produto.id} nome={produto.nome} />
+      </div>
 
       <ProdutoForm initialData={initialData} />
     </div>
