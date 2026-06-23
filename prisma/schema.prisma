@@ -1,0 +1,86 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Papel {
+  admin
+  atendente
+  cozinha
+}
+
+enum StatusPedido {
+  recebido
+  preparando
+  pronto
+  entregue
+}
+
+enum TipoPedido {
+  mesa
+  retirada
+  delivery
+}
+
+enum FormaPagamento {
+  dinheiro
+  cartao_credito
+  cartao_debito
+  pix
+}
+
+model Usuario {
+  id        String   @id @default(cuid())
+  nome      String
+  email     String   @unique
+  senhaHash String
+  papel     Papel    @default(atendente)
+  criadoEm DateTime @default(now())
+  pedidos   Pedido[]
+}
+
+model Cliente {
+  id       String   @id @default(cuid())
+  nome     String
+  telefone String?
+  endereco String?
+  pedidos  Pedido[]
+}
+
+model Produto {
+  id         String      @id @default(cuid())
+  nome       String
+  categoria  String
+  preco      Decimal     @db.Decimal(10, 2)
+  disponivel Boolean     @default(true)
+  criadoEm  DateTime    @default(now())
+  itens      ItemPedido[]
+}
+
+model Pedido {
+  id             String         @id @default(cuid())
+  clienteId      String?
+  cliente        Cliente?       @relation(fields: [clienteId], references: [id])
+  usuarioId      String?
+  usuario        Usuario?       @relation(fields: [usuarioId], references: [id])
+  status         StatusPedido   @default(recebido)
+  tipo           TipoPedido
+  formaPagamento FormaPagamento
+  observacao     String?
+  criadoEm      DateTime       @default(now())
+  atualizadoEm  DateTime       @updatedAt
+  itens          ItemPedido[]
+}
+
+model ItemPedido {
+  id         String  @id @default(cuid())
+  pedidoId   String
+  pedido     Pedido  @relation(fields: [pedidoId], references: [id], onDelete: Cascade)
+  produtoId  String
+  produto    Produto @relation(fields: [produtoId], references: [id])
+  quantidade Int     @default(1)
+  observacao String?
+}
