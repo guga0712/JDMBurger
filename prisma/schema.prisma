@@ -50,12 +50,20 @@ model Cliente {
   pedidos  Pedido[]
 }
 
+enum Categoria {
+  lanches
+  bebidas
+  acompanhamento
+  doces
+}
+
 model Produto {
   id         String      @id @default(cuid())
   nome       String
-  categoria  String
+  categoria  Categoria
   preco      Decimal     @db.Decimal(10, 2)
   disponivel Boolean     @default(true)
+  imagemUrl  String?
   criadoEm  DateTime    @default(now())
   itens      ItemPedido[]
 }
