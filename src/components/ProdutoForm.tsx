@@ -20,12 +20,43 @@ type Props = {
   onSuccess?: () => void
 }
 
+type FieldErrors = {
+  nome?: string
+  preco?: string
+}
+
 const CATEGORIAS = [
   { value: 'lanches', label: 'Lanches' },
   { value: 'bebidas', label: 'Bebidas' },
   { value: 'acompanhamento', label: 'Acompanhamento' },
   { value: 'doces', label: 'Doces' },
 ] as const
+
+function validate(nome: string, preco: string): FieldErrors {
+  const errors: FieldErrors = {}
+
+  const nomeTrimmed = nome.trim()
+  if (!nomeTrimmed) {
+    errors.nome = 'O nome é obrigatório.'
+  } else if (nomeTrimmed.length < 2) {
+    errors.nome = 'O nome deve ter pelo menos 2 caracteres.'
+  } else if (nomeTrimmed.length > 100) {
+    errors.nome = 'O nome não pode ter mais de 100 caracteres.'
+  }
+
+  const precoNum = parseFloat(preco.replace(',', '.'))
+  if (!preco) {
+    errors.preco = 'O preço é obrigatório.'
+  } else if (isNaN(precoNum)) {
+    errors.preco = 'Informe um preço válido.'
+  } else if (precoNum <= 0) {
+    errors.preco = 'O preço deve ser maior que zero.'
+  } else if (precoNum > 9999) {
+    errors.preco = 'O preço não pode ser maior que R$ 9.999,00.'
+  }
+
+  return errors
+}
 
 export function ProdutoForm({ initialData, onSuccess }: Props) {
   const router = useRouter()
@@ -38,14 +69,24 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
   const [imagemUrl, setImagemUrl] = useState<string | null>(initialData?.imagemUrl ?? null)
   const [uploading, setUploading] = useState(false)
   const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
+  const [submitError, setSubmitError] = useState<string | null>(null)
+
+  function clearFieldError(field: keyof FieldErrors) {
+    setFieldErrors((prev) => {
+      if (!prev[field]) return prev
+      const next = { ...prev }
+      delete next[field]
+      return next
+    })
+  }
 
   async function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
 
     setUploading(true)
-    setError(null)
+    setSubmitError(null)
 
     try {
       const formData = new FormData()
@@ -64,7 +105,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
       const data = await res.json() as { url: string }
       setImagemUrl(data.url)
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao fazer upload da imagem')
+      setSubmitError(err instanceof Error ? err.message : 'Erro ao fazer upload da imagem')
     } finally {
       setUploading(false)
     }
@@ -72,22 +113,23 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
 
   function handleRemoveImage() {
     setImagemUrl(null)
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
+    if (fileInputRef.current) fileInputRef.current.value = ''
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    setError(null)
+    setSubmitError(null)
+
+    const errors = validate(nome, preco)
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+
+    setFieldErrors({})
     setSubmitting(true)
 
     const precoNum = parseFloat(preco.replace(',', '.'))
-    if (isNaN(precoNum) || precoNum <= 0) {
-      setError('Preço inválido')
-      setSubmitting(false)
-      return
-    }
 
     const payload = {
       nome: nome.trim(),
@@ -98,9 +140,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
     }
 
     try {
-      const url = initialData
-        ? `/api/produtos/${initialData.id}`
-        : '/api/produtos'
+      const url = initialData ? `/api/produtos/${initialData.id}` : '/api/produtos'
       const method = initialData ? 'PUT' : 'POST'
 
       const res = await fetch(url, {
@@ -121,32 +161,40 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
         router.refresh()
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erro ao salvar produto')
+      setSubmitError(err instanceof Error ? err.message : 'Erro ao salvar produto')
     } finally {
       setSubmitting(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 max-w-lg">
-      {error && (
+    <form onSubmit={handleSubmit} className="space-y-5 max-w-lg" noValidate>
+      {submitError && (
         <div className="bg-destructive/10 border border-destructive/30 text-destructive rounded-md px-4 py-3 text-sm">
-          {error}
+          {submitError}
         </div>
       )}
 
+      {/* Nome */}
       <div className="space-y-1.5">
         <Label htmlFor="nome">Nome</Label>
         <Input
           id="nome"
           value={nome}
-          onChange={(e) => setNome(e.target.value)}
+          onChange={(e) => {
+            setNome(e.target.value)
+            clearFieldError('nome')
+          }}
           placeholder="Nome do produto"
-          required
           maxLength={100}
+          aria-invalid={!!fieldErrors.nome}
         />
+        {fieldErrors.nome && (
+          <p className="text-sm text-destructive">{fieldErrors.nome}</p>
+        )}
       </div>
 
+      {/* Categoria */}
       <div className="space-y-1.5">
         <Label htmlFor="categoria">Categoria</Label>
         <select
@@ -163,6 +211,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
         </select>
       </div>
 
+      {/* Preço */}
       <div className="space-y-1.5">
         <Label htmlFor="preco">Preço (R$)</Label>
         <Input
@@ -170,14 +219,21 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
           type="number"
           step="0.01"
           min="0.01"
-          max="9999.99"
+          max="9999"
           value={preco}
-          onChange={(e) => setPreco(e.target.value)}
+          onChange={(e) => {
+            setPreco(e.target.value)
+            clearFieldError('preco')
+          }}
           placeholder="0,00"
-          required
+          aria-invalid={!!fieldErrors.preco}
         />
+        {fieldErrors.preco && (
+          <p className="text-sm text-destructive">{fieldErrors.preco}</p>
+        )}
       </div>
 
+      {/* Disponível */}
       <div className="flex items-center gap-3">
         <button
           type="button"
@@ -197,6 +253,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
         </Label>
       </div>
 
+      {/* Imagem */}
       <div className="space-y-2">
         <Label>Imagem</Label>
 
@@ -257,6 +314,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
         />
       </div>
 
+      {/* Actions */}
       <div className="flex items-center gap-3 pt-2">
         <Button
           type="submit"
