@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { Upload, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -169,6 +170,7 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
           type="number"
           step="0.01"
           min="0.01"
+          max="9999.99"
           value={preco}
           onChange={(e) => setPreco(e.target.value)}
           placeholder="0,00"
@@ -182,14 +184,12 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
           role="switch"
           aria-checked={disponivel}
           onClick={() => setDisponivel((v) => !v)}
-          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background ${
-            disponivel ? 'bg-primary' : 'bg-muted'
-          }`}
+          className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background ${disponivel ? 'bg-primary' : 'bg-muted'
+            }`}
         >
           <span
-            className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform ${
-              disponivel ? 'translate-x-5' : 'translate-x-0'
-            }`}
+            className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform ${disponivel ? 'translate-x-5' : 'translate-x-0'
+              }`}
           />
         </button>
         <Label className="cursor-pointer" onClick={() => setDisponivel((v) => !v)}>
@@ -200,8 +200,11 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
       <div className="space-y-2">
         <Label>Imagem</Label>
 
-        {imagemUrl && (
-          <div className="relative w-32 h-32 rounded-md overflow-hidden border border-border">
+        {imagemUrl ? (
+          <div
+            className="relative rounded-xl overflow-hidden border border-border bg-muted"
+            style={{ maxWidth: 240, aspectRatio: '4/3' }}
+          >
             <Image
               src={imagemUrl}
               alt="Imagem do produto"
@@ -212,45 +215,46 @@ export function ProdutoForm({ initialData, onSuccess }: Props) {
             <button
               type="button"
               onClick={handleRemoveImage}
-              className="absolute top-1 right-1 bg-black/70 hover:bg-black/90 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs leading-none transition-colors"
+              className="absolute top-2 right-2 bg-background/80 hover:bg-background text-foreground rounded-lg p-1.5 transition-colors"
               title="Remover imagem"
             >
-              ✕
+              <X size={13} strokeWidth={2.5} />
             </button>
           </div>
-        )}
-
-        <div className="flex items-center gap-3">
+        ) : (
           <label
             htmlFor="imagem"
-            className={`cursor-pointer inline-flex items-center gap-2 px-3 py-2 text-sm rounded-md border border-border bg-card text-foreground hover:bg-muted transition-colors ${
-              uploading ? 'opacity-50 pointer-events-none' : ''
-            }`}
+            className={`flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border bg-card/50 cursor-pointer hover:border-primary/50 hover:bg-card transition-colors ${uploading ? 'opacity-50 pointer-events-none' : ''
+              }`}
+            style={{ maxWidth: 240, aspectRatio: '4/3' }}
           >
             {uploading ? (
               <>
-                <span className="inline-block h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                Enviando...
+                <span className="inline-block h-5 w-5 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                <span className="text-sm text-muted-foreground">Enviando...</span>
               </>
             ) : (
-              'Escolher imagem'
+              <>
+                <Upload size={20} strokeWidth={1.5} className="text-muted-foreground/50" />
+                <span className="text-sm text-muted-foreground text-center px-4">
+                  Escolher imagem
+                  <br />
+                  <span className="text-xs opacity-60">JPEG, PNG, WebP — máx. 2MB</span>
+                </span>
+              </>
             )}
           </label>
-          <input
-            ref={fileInputRef}
-            id="imagem"
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            className="sr-only"
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
-          {!imagemUrl && !uploading && (
-            <span className="text-sm text-muted-foreground">
-              JPEG, PNG ou WebP — máx. 2MB
-            </span>
-          )}
-        </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          id="imagem"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="sr-only"
+          onChange={handleFileChange}
+          disabled={uploading}
+        />
       </div>
 
       <div className="flex items-center gap-3 pt-2">

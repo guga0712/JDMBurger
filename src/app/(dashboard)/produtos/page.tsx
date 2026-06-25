@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Plus } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { ProdutoCard } from '@/components/ProdutoCard'
 import { Categoria } from '@prisma/client'
@@ -43,9 +44,10 @@ export default async function ProdutosPage({ searchParams }: { searchParams: Sea
         <h1 className="text-xl md:text-2xl font-bold text-foreground">Produtos</h1>
         <Link
           href="/produtos/novo"
-          className="inline-flex items-center px-3 py-2 md:px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
+          className="inline-flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap active:scale-[0.98]"
         >
-          + Novo produto
+          <Plus size={15} strokeWidth={2.5} />
+          Novo produto
         </Link>
       </div>
 
@@ -75,13 +77,29 @@ export default async function ProdutosPage({ searchParams }: { searchParams: Sea
 
       {/* Grid */}
       {produtos.length === 0 ? (
-        <div className="text-center py-16 text-muted-foreground">
-          <p className="text-lg">Nenhum produto encontrado.</p>
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div
+            className="w-16 h-16 rounded-full bg-muted flex items-center justify-center text-2xl select-none"
+            aria-hidden="true"
+          >
+            🍔
+          </div>
+          <div className="text-center space-y-1">
+            <p className="font-semibold text-foreground">
+              {categoriaAtiva === 'todos'
+                ? 'Nenhum produto cadastrado'
+                : `Sem produtos em ${CATEGORIAS.find((c) => c.value === categoriaAtiva)?.label ?? categoriaAtiva}`}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Adicione produtos para eles aparecerem aqui.
+            </p>
+          </div>
           <Link
             href="/produtos/novo"
-            className="mt-3 inline-block text-primary hover:underline text-sm"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors active:scale-[0.98]"
           >
-            Adicionar produto
+            <Plus size={15} strokeWidth={2.5} />
+            Novo produto
           </Link>
         </div>
       ) : (
