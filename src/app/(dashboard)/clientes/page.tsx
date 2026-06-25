@@ -3,6 +3,7 @@ import { Plus, UserRound, Phone, Mail, Pencil } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { ClienteSearchInput } from '@/components/ClienteSearchInput'
 import { ClientePagination, PER_PAGE } from '@/components/ClientePagination'
+import { DeleteClienteInlineButton } from '@/components/DeleteClienteInlineButton'
 
 type SearchParams = Promise<{ busca?: string; page?: string }>
 
@@ -90,7 +91,7 @@ export default async function ClientesPage({ searchParams }: { searchParams: Sea
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Nome</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">Telefone</th>
                   <th className="text-left px-4 py-3 font-semibold text-muted-foreground">E-mail</th>
-                  <th className="px-4 py-3 w-16" />
+                  <th className="px-4 py-3 w-24" />
                 </tr>
               </thead>
               <tbody>
@@ -108,14 +109,17 @@ export default async function ClientesPage({ searchParams }: { searchParams: Sea
                     <td className="px-4 py-3 text-muted-foreground">
                       {cliente.email ?? <span className="opacity-40">—</span>}
                     </td>
-                    <td className="px-4 py-3 text-right">
-                      <Link
-                        href={`/clientes/${cliente.id}/editar`}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
-                      >
-                        <Pencil size={13} strokeWidth={2} />
-                        Editar
-                      </Link>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-0.5">
+                        <Link
+                          href={`/clientes/${cliente.id}/editar`}
+                          title={`Editar ${cliente.nome}`}
+                          className="inline-flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
+                        >
+                          <Pencil size={15} strokeWidth={1.75} />
+                        </Link>
+                        <DeleteClienteInlineButton id={cliente.id} nome={cliente.nome} />
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -126,12 +130,11 @@ export default async function ClientesPage({ searchParams }: { searchParams: Sea
           {/* Mobile card list */}
           <div className="md:hidden space-y-2">
             {clientes.map((cliente) => (
-              <Link
+              <div
                 key={cliente.id}
-                href={`/clientes/${cliente.id}/editar`}
-                className="flex items-center justify-between gap-3 bg-card border border-border rounded-xl px-4 py-3 hover:border-primary/30 transition-colors active:scale-[0.99]"
+                className="flex items-center justify-between gap-3 bg-card border border-border rounded-xl px-4 py-3"
               >
-                <div className="min-w-0 space-y-0.5">
+                <div className="min-w-0 space-y-0.5 flex-1">
                   <p className="font-semibold text-sm text-foreground truncate">{cliente.nome}</p>
                   <div className="flex flex-col gap-0.5">
                     {cliente.telefone && (
@@ -148,8 +151,17 @@ export default async function ClientesPage({ searchParams }: { searchParams: Sea
                     )}
                   </div>
                 </div>
-                <Pencil size={15} strokeWidth={1.75} className="shrink-0 text-muted-foreground/50" />
-              </Link>
+                <div className="flex items-center gap-0.5 shrink-0">
+                  <Link
+                    href={`/clientes/${cliente.id}/editar`}
+                    title={`Editar ${cliente.nome}`}
+                    className="inline-flex items-center justify-center w-9 h-9 rounded-md text-muted-foreground/50 hover:text-foreground hover:bg-muted transition-colors"
+                  >
+                    <Pencil size={16} strokeWidth={1.75} />
+                  </Link>
+                  <DeleteClienteInlineButton id={cliente.id} nome={cliente.nome} />
+                </div>
+              </div>
             ))}
           </div>
 
