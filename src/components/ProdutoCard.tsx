@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Categoria } from '@prisma/client'
+type Categoria = 'lanches' | 'bebidas' | 'acompanhamento' | 'doces'
 
 type Props = {
   id: string
@@ -60,7 +60,7 @@ export function ProdutoCard({ id, nome, categoria, preco, disponivel: initialDis
   return (
     <div className="bg-card border border-border rounded-lg overflow-hidden flex flex-col">
       {/* Image */}
-      <div className="relative h-36 bg-muted flex items-center justify-center">
+      <div className="relative aspect-[4/3] bg-muted flex items-center justify-center">
         {imagemUrl ? (
           <Image
             src={imagemUrl}
@@ -70,7 +70,17 @@ export function ProdutoCard({ id, nome, categoria, preco, disponivel: initialDis
             unoptimized
           />
         ) : (
-          <span className="text-4xl select-none">🍔</span>
+          <span className="text-4xl select-none">
+            {categoria === 'lanches'
+              ? '🍔'
+              : categoria === 'bebidas'
+                ? '🥤'
+                : categoria === 'acompanhamento'
+                  ? '🍟'
+                  : categoria === 'doces'
+                    ? '🍰'
+                    : '❓'}
+          </span>
         )}
       </div>
 
@@ -97,15 +107,13 @@ export function ProdutoCard({ id, nome, categoria, preco, disponivel: initialDis
             aria-checked={disponivel}
             disabled={toggling}
             onClick={handleToggleDisponivel}
-            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none disabled:opacity-50 ${
-              disponivel ? 'bg-primary' : 'bg-muted'
-            }`}
+            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none disabled:opacity-50 ${disponivel ? 'bg-primary' : 'bg-muted'
+              }`}
             title={disponivel ? 'Marcar como indisponível' : 'Marcar como disponível'}
           >
             <span
-              className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${
-                disponivel ? 'translate-x-4' : 'translate-x-0'
-              }`}
+              className={`pointer-events-none inline-block h-4 w-4 rounded-full bg-white shadow transition-transform ${disponivel ? 'translate-x-4' : 'translate-x-0'
+                }`}
             />
           </button>
 
