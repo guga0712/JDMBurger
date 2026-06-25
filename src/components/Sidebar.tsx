@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, Package, LogOut, UserCircle, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, Users, LogOut, UserCircle, Menu, X } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/produtos', label: 'Produtos', icon: Package },
+  { href: '/clientes', label: 'Clientes', icon: Users },
 ]
 
 type Props = {
