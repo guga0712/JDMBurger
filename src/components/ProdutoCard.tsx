@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Pencil } from 'lucide-react'
 
 type Categoria = 'lanches' | 'bebidas' | 'acompanhamento' | 'doces'
 
@@ -72,7 +71,9 @@ export function ProdutoCard({
   }
 
   return (
-    <div className="group bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-all duration-200 hover:border-primary/30 hover:shadow-[0_4px_20px_rgba(192,57,43,0.08)]">
+    <div className="group relative bg-card border border-border rounded-xl overflow-hidden flex flex-col transition-all duration-200 hover:border-primary/30 hover:shadow-[0_4px_20px_rgba(192,57,43,0.08)] cursor-pointer">
+      {/* Full-card link overlay */}
+      <Link href={`/produtos/${id}/editar`} className="absolute inset-0 z-10" aria-label={`Editar ${nome}`} />
       {/* Image */}
       <div className="relative aspect-[4/3] bg-muted overflow-hidden">
         {imagemUrl ? (
@@ -102,14 +103,6 @@ export function ProdutoCard({
           </div>
         )}
 
-        {/* Edit shortcut — reveals on hover */}
-        <Link
-          href={`/produtos/${id}/editar`}
-          className="absolute top-2 right-2 bg-background/80 hover:bg-background backdrop-blur-sm text-foreground rounded-lg p-1.5 opacity-0 group-hover:opacity-100 transition-all duration-200 active:scale-95"
-          title="Editar produto"
-        >
-          <Pencil size={13} strokeWidth={2} />
-        </Link>
       </div>
 
       {/* Content */}
@@ -133,7 +126,7 @@ export function ProdutoCard({
             aria-checked={disponivel}
             disabled={toggling}
             onClick={handleToggleDisponivel}
-            className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none disabled:opacity-50 ${
+            className={`relative z-20 inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none disabled:opacity-50 ${
               disponivel ? 'bg-primary' : 'bg-muted'
             }`}
             title={disponivel ? 'Marcar como indisponível' : 'Marcar como disponível'}
