@@ -49,8 +49,8 @@ export default async function EditarProdutoPage({ params }: Props) {
         <span className="text-sm text-foreground font-medium">Editar produto</span>
       </div>
 
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Editar produto</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Editar produto</h1>
         <DeleteProdutoButton id={produto.id} nome={produto.nome} />
       </div>
 

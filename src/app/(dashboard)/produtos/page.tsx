@@ -39,11 +39,11 @@ export default async function ProdutosPage({ searchParams }: { searchParams: Sea
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-foreground">Produtos</h1>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-xl md:text-2xl font-bold text-foreground">Produtos</h1>
         <Link
           href="/produtos/novo"
-          className="inline-flex items-center px-4 py-2 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors"
+          className="inline-flex items-center px-3 py-2 md:px-4 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap"
         >
           + Novo produto
         </Link>
