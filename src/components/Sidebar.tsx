@@ -4,10 +4,12 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, Package, Users, LogOut, UserCircle, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, Users, ClipboardList, PlusCircle, LogOut, UserCircle, Menu, X } from 'lucide-react'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/pedidos/novo', label: 'Novo pedido', icon: PlusCircle },
+  { href: '/pedidos', label: 'Pedidos', icon: ClipboardList },
   { href: '/produtos', label: 'Produtos', icon: Package },
   { href: '/clientes', label: 'Clientes', icon: Users },
 ]
@@ -41,7 +43,10 @@ export function Sidebar({ userName }: Props) {
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
-            const isActive = pathname === href || pathname.startsWith(href + '/')
+            const isActive =
+              href === '/pedidos'
+                ? pathname === '/pedidos'
+                : pathname === href || pathname.startsWith(href + '/')
             return (
               <Link
                 key={href}
@@ -114,7 +119,10 @@ export function Sidebar({ userName }: Props) {
         {/* Links de navegação */}
         <nav className="flex-1 flex flex-col px-8 gap-2">
           {NAV_ITEMS.map(({ href, label, icon: Icon }, i) => {
-            const isActive = pathname === href || pathname.startsWith(href + '/')
+            const isActive =
+              href === '/pedidos'
+                ? pathname === '/pedidos'
+                : pathname === href || pathname.startsWith(href + '/')
             return (
               <Link
                 key={href}
