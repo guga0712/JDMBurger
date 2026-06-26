@@ -4,14 +4,15 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
-import { LayoutDashboard, Package, Users, ClipboardList, PlusCircle, LogOut, UserCircle, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Package, Users, ClipboardList, PlusCircle, LogOut, UserCircle, Menu, X, ChefHat } from 'lucide-react'
 
 const NAV_ITEMS = [
+  { href: '/pedidos/novo', label: 'Novo pedido', icon: PlusCircle, highlight: true },
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/pedidos/novo', label: 'Novo pedido', icon: PlusCircle },
   { href: '/pedidos', label: 'Pedidos', icon: ClipboardList },
   { href: '/produtos', label: 'Produtos', icon: Package },
   { href: '/clientes', label: 'Clientes', icon: Users },
+  { href: '/cozinha', label: 'Cozinha', icon: ChefHat, disable: true },
 ]
 
 type Props = {
@@ -42,7 +43,7 @@ export function Sidebar({ userName }: Props) {
         </div>
 
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+          {NAV_ITEMS.map(({ href, label, icon: Icon, highlight }) => {
             const isActive =
               href === '/pedidos'
                 ? pathname === '/pedidos'
@@ -51,8 +52,10 @@ export function Sidebar({ userName }: Props) {
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors ${isActive
-                    ? 'bg-primary/15 text-primary font-semibold'
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-semibold transition-colors ${highlight
+                  ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                  : isActive
+                    ? 'bg-primary/15 text-primary'
                     : 'text-muted-foreground hover:bg-muted/70 hover:text-foreground font-medium'
                   }`}
               >
@@ -98,8 +101,8 @@ export function Sidebar({ userName }: Props) {
       {/* Overlay sempre no DOM para a animação de saída funcionar */}
       <div
         className={`fixed inset-0 z-50 flex flex-col bg-background transition-all duration-300 ease-in-out md:hidden ${open
-            ? 'opacity-100 translate-y-0 pointer-events-auto'
-            : 'opacity-0 -translate-y-4 pointer-events-none'
+          ? 'opacity-100 translate-y-0 pointer-events-auto'
+          : 'opacity-0 -translate-y-4 pointer-events-none'
           }`}
       >
         {/* Header do menu */}
@@ -118,7 +121,7 @@ export function Sidebar({ userName }: Props) {
 
         {/* Links de navegação */}
         <nav className="flex-1 flex flex-col px-8 gap-2">
-          {NAV_ITEMS.map(({ href, label, icon: Icon }, i) => {
+          {NAV_ITEMS.map(({ href, label, icon: Icon, highlight }, i) => {
             const isActive =
               href === '/pedidos'
                 ? pathname === '/pedidos'
@@ -129,9 +132,11 @@ export function Sidebar({ userName }: Props) {
                 href={href}
                 style={{ transitionDelay: open ? `${i * 60}ms` : '0ms' }}
                 className={`flex items-center gap-4 px-4 py-4 rounded-xl text-lg font-semibold transition-all duration-300 ${open ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'
-                  } ${isActive
-                    ? 'bg-primary/15 text-primary'
-                    : 'text-foreground hover:bg-muted'
+                  } ${highlight
+                    ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                    : isActive
+                      ? 'bg-primary/15 text-primary'
+                      : 'text-foreground hover:bg-muted'
                   }`}
               >
                 <Icon size={22} strokeWidth={1.75} />

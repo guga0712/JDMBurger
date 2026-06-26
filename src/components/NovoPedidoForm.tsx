@@ -257,9 +257,9 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-6">
+      <div className="flex flex-col gap-6 lg:flex-row lg:h-full lg:overflow-hidden">
         {/* ─────────── LEFT: Products ─────────── */}
-        <div className="flex-1 min-w-0 space-y-8">
+        <div className="flex-1 min-w-0 space-y-8 lg:overflow-y-auto lg:min-h-0 lg:pr-1">
           {CATEGORIA_ORDER.map((cat) => {
             const prods = produtosPorCategoria[cat]
             if (!prods?.length) return null
@@ -268,18 +268,17 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                   {CATEGORIA_LABELS[cat]}
                 </h2>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 gap-2">
                   {prods.map((produto) => {
                     const qty = cart[produto.id]?.quantidade ?? 0
                     const selected = qty > 0
                     return (
                       <div
                         key={produto.id}
-                        className={`rounded-xl overflow-hidden flex flex-col bg-card transition-all duration-150 ${
-                          selected
-                            ? 'border-[2.5px] border-primary shadow-[0_0_0_3px_rgba(192,57,43,0.12)]'
-                            : 'border border-border'
-                        } ${!produto.disponivel ? 'opacity-50' : ''}`}
+                        className={`rounded-xl overflow-hidden flex flex-col bg-card transition-all duration-150 ${selected
+                          ? 'border-[2.5px] border-primary shadow-[0_0_0_3px_rgba(192,57,43,0.12)]'
+                          : 'border border-border'
+                          } ${!produto.disponivel ? 'opacity-50' : ''}`}
                       >
                         {/* Image / emoji */}
                         <div className="aspect-square bg-muted relative overflow-hidden">
@@ -293,26 +292,26 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-4xl select-none" aria-hidden="true">
+                              <span className="text-2xl select-none" aria-hidden="true">
                                 {EMOJI_MAP[cat]}
                               </span>
                             </div>
                           )}
                           {!produto.disponivel && (
                             <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
-                              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest px-2 py-0.5 bg-background/80 rounded">
-                                Indisponível
+                              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest px-1.5 py-0.5 bg-background/80 rounded">
+                                Indisp.
                               </span>
                             </div>
                           )}
                         </div>
 
                         {/* Info */}
-                        <div className="px-2.5 pt-2 pb-1">
-                          <p className="text-xs font-semibold text-foreground truncate leading-tight">
+                        <div className="px-2 pt-1.5 pb-0.5">
+                          <p className="text-[11px] font-semibold text-foreground truncate leading-tight">
                             {produto.nome}
                           </p>
-                          <p className="text-xs font-bold text-primary mt-0.5">
+                          <p className="text-[11px] font-bold text-primary mt-0.5">
                             {produto.preco.toLocaleString('pt-BR', {
                               style: 'currency',
                               currency: 'BRL',
@@ -321,23 +320,21 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                         </div>
 
                         {/* Stepper */}
-                        <div className="flex items-center gap-1.5 px-2.5 pb-2.5 mt-auto">
+                        <div className="flex items-center gap-1 px-2 pb-2 mt-auto">
                           <button
                             type="button"
                             onClick={() => decrement(produto.id)}
                             disabled={qty === 0}
-                            className={`flex items-center justify-center w-7 h-7 rounded-md transition-colors text-sm font-bold shrink-0 ${
-                              qty > 0
-                                ? 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95'
-                                : 'bg-muted/40 text-muted-foreground/20 cursor-not-allowed'
-                            }`}
+                            className={`flex items-center justify-center w-6 h-6 rounded-md transition-colors font-bold shrink-0 ${qty > 0
+                              ? 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95'
+                              : 'bg-muted/40 text-muted-foreground/20 cursor-not-allowed'
+                              }`}
                           >
-                            <Minus size={11} strokeWidth={3} />
+                            <Minus size={10} strokeWidth={3} />
                           </button>
                           <span
-                            className={`flex-1 text-center text-sm font-bold tabular-nums transition-colors ${
-                              qty > 0 ? 'text-primary' : 'text-muted-foreground/30'
-                            }`}
+                            className={`flex-1 text-center text-xs font-bold tabular-nums transition-colors ${qty > 0 ? 'text-primary' : 'text-muted-foreground/30'
+                              }`}
                           >
                             {qty}
                           </span>
@@ -345,9 +342,9 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                             type="button"
                             onClick={() => increment(produto)}
                             disabled={!produto.disponivel}
-                            className="flex items-center justify-center w-7 h-7 rounded-md bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                            className="flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                           >
-                            <Plus size={11} strokeWidth={3} />
+                            <Plus size={10} strokeWidth={3} />
                           </button>
                         </div>
                       </div>
@@ -366,8 +363,8 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
         </div>
 
         {/* ─────────── RIGHT: Sidebar ─────────── */}
-        <div className="w-full lg:w-80 xl:w-96 shrink-0 space-y-4 lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-5rem)] lg:overflow-y-auto lg:pr-1">
-
+        <div className="w-full lg:w-80 xl:w-96 shrink-0 space-y-4 lg:overflow-y-auto">
+          <h2 className='text-lg font-bold text-foreground'>Resumo do pedido</h2>
           {/* Cliente */}
           <div className="bg-card border border-border rounded-xl p-4 space-y-3">
             <h3 className="text-sm font-semibold text-foreground">Cliente</h3>
@@ -430,9 +427,8 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                     <button
                       type="button"
                       onMouseDown={handleOpenQuickAdd}
-                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-primary/10 transition-colors ${
-                        clientesFiltrados.length > 0 ? 'border-t border-border/60' : ''
-                      }`}
+                      className={`w-full flex items-center gap-2 px-3 py-2 text-sm text-primary hover:bg-primary/10 transition-colors ${clientesFiltrados.length > 0 ? 'border-t border-border/60' : ''
+                        }`}
                     >
                       <UserPlus size={14} />
                       {busca.trim() ? `Criar "${busca.trim()}"` : 'Novo cliente'}
