@@ -57,6 +57,16 @@ const TIPO_OPTIONS = [
   { value: 'delivery' as const, label: 'Delivery' },
 ]
 
+function maskTelefone(value: string): string {
+  const digits = value.replace(/\D/g, '').slice(0, 11)
+  const len = digits.length
+  if (len === 0) return ''
+  if (len <= 2) return `(${digits}`
+  if (len <= 6) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
+  if (len <= 10) return `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+}
+
 const PAGAMENTO_OPTIONS = [
   { value: 'pix' as const, label: 'Pix' },
   { value: 'cartao_credito' as const, label: 'Cartão' },
@@ -88,7 +98,6 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
   /* ── Submission ── */
   const [submitting, setSubmitting] = useState(false)
   const [modal, setModal] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
-  const [clienteError, setClienteError] = useState(false)
 
   /* ── Cart helpers ── */
   function increment(produto: Produto) {
@@ -137,7 +146,6 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
     setBusca('')
     setShowDropdown(false)
     setShowQuickAdd(false)
-    setClienteError(false)
   }
 
   function handleClearCliente() {
@@ -197,7 +205,7 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
   )
 
   const total = cartEntries.reduce((sum, e) => sum + e.produto.preco * e.quantidade, 0)
-  const canSubmit = cartEntries.length > 0 && formaPagamento !== null && !submitting
+  const canSubmit = cartEntries.length > 0 && formaPagamento !== null && clienteId !== null && !submitting
 
   const produtosPorCategoria = useMemo(() => {
     const map: Partial<Record<Categoria, Produto[]>> = {}
@@ -211,10 +219,6 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
   /* ── Submit ── */
   async function handleSubmit() {
     if (!canSubmit) return
-    if (!clienteId) {
-      setClienteError(true)
-      return
-    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/pedidos', {
@@ -274,15 +278,15 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                   {CATEGORIA_LABELS[cat]}
                 </h2>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-4 xl:grid-cols-5 gap-2">
+                <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-5 xl:grid-cols-7 gap-1.5">
                   {prods.map((produto) => {
                     const qty = cart[produto.id]?.quantidade ?? 0
                     const selected = qty > 0
                     return (
                       <div
                         key={produto.id}
-                        className={`rounded-xl overflow-hidden flex flex-col bg-card transition-all duration-150 ${selected
-                          ? 'border-[2.5px] border-primary shadow-[0_0_0_3px_rgba(192,57,43,0.12)]'
+                        className={`rounded-lg overflow-hidden flex flex-col bg-card transition-all duration-150 ${selected
+                          ? 'border-[2px] border-primary shadow-[0_0_0_2px_rgba(192,57,43,0.12)]'
                           : 'border border-border'
                           } ${!produto.disponivel ? 'opacity-50' : ''}`}
                       >
@@ -298,14 +302,14 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center">
-                              <span className="text-2xl select-none" aria-hidden="true">
+                              <span className="text-xl select-none" aria-hidden="true">
                                 {EMOJI_MAP[cat]}
                               </span>
                             </div>
                           )}
                           {!produto.disponivel && (
                             <div className="absolute inset-0 bg-background/70 flex items-center justify-center">
-                              <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest px-1.5 py-0.5 bg-background/80 rounded">
+                              <span className="text-[8px] font-bold text-muted-foreground uppercase tracking-widest px-1 py-0.5 bg-background/80 rounded">
                                 Indisp.
                               </span>
                             </div>
@@ -313,11 +317,11 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                         </div>
 
                         {/* Info */}
-                        <div className="px-2 pt-1.5 pb-0.5">
-                          <p className="text-[11px] font-semibold text-foreground truncate leading-tight">
+                        <div className="px-1.5 pt-1 pb-0.5">
+                          <p className="text-[10px] font-semibold text-foreground truncate leading-tight">
                             {produto.nome}
                           </p>
-                          <p className="text-[11px] font-bold text-primary mt-0.5">
+                          <p className="text-[10px] font-bold text-primary mt-0.5">
                             {produto.preco.toLocaleString('pt-BR', {
                               style: 'currency',
                               currency: 'BRL',
@@ -326,20 +330,20 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                         </div>
 
                         {/* Stepper */}
-                        <div className="flex items-center gap-1 px-2 pb-2 mt-auto">
+                        <div className="flex items-center gap-0.5 px-1.5 pb-1.5 mt-auto">
                           <button
                             type="button"
                             onClick={() => decrement(produto.id)}
                             disabled={qty === 0}
-                            className={`flex items-center justify-center w-6 h-6 rounded-md transition-colors font-bold shrink-0 ${qty > 0
+                            className={`flex items-center justify-center w-5 h-5 rounded transition-colors font-bold shrink-0 ${qty > 0
                               ? 'bg-primary/10 text-primary hover:bg-primary/20 active:scale-95'
                               : 'bg-muted/40 text-muted-foreground/20 cursor-not-allowed'
                               }`}
                           >
-                            <Minus size={10} strokeWidth={3} />
+                            <Minus size={8} strokeWidth={3} />
                           </button>
                           <span
-                            className={`flex-1 text-center text-xs font-bold tabular-nums transition-colors ${qty > 0 ? 'text-primary' : 'text-muted-foreground/30'
+                            className={`flex-1 text-center text-[10px] font-bold tabular-nums transition-colors ${qty > 0 ? 'text-primary' : 'text-muted-foreground/30'
                               }`}
                           >
                             {qty}
@@ -348,9 +352,9 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                             type="button"
                             onClick={() => increment(produto)}
                             disabled={!produto.disponivel}
-                            className="flex items-center justify-center w-6 h-6 rounded-md bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
+                            className="flex items-center justify-center w-5 h-5 rounded bg-primary/10 text-primary hover:bg-primary/20 active:scale-95 transition-colors disabled:opacity-30 disabled:cursor-not-allowed shrink-0"
                           >
-                            <Plus size={10} strokeWidth={3} />
+                            <Plus size={8} strokeWidth={3} />
                           </button>
                         </div>
                       </div>
@@ -372,13 +376,8 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
         <div className="w-full lg:w-80 xl:w-96 shrink-0 space-y-4 lg:overflow-y-auto">
           <h2 className='text-lg font-bold text-foreground'>Resumo do pedido</h2>
           {/* Cliente */}
-          <div className={`bg-card border rounded-xl p-4 space-y-3 transition-colors ${clienteError ? 'border-destructive' : 'border-border'}`}>
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-semibold text-foreground">Cliente</h3>
-              {clienteError && (
-                <span className="text-xs text-destructive font-medium">Obrigatório</span>
-              )}
-            </div>
+          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">Cliente</h3>
 
             {clienteId ? (
               <div className="flex items-center justify-between gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
@@ -463,11 +462,11 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
                     />
                     <Input
                       value={quickTelefone}
-                      onChange={(e) => setQuickTelefone(e.target.value)}
+                      onChange={(e) => setQuickTelefone(maskTelefone(e.target.value))}
                       placeholder="Telefone (opcional)"
                       className="h-8 text-sm"
-                      type="tel"
                       inputMode="numeric"
+                      maxLength={15}
                     />
                     <div className="flex gap-2">
                       <Button
