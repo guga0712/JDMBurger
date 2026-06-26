@@ -127,16 +127,34 @@
   --sidebar-ring: #C0392B;
 }
 
+/* Scrollbar global — fora de @layer para garantir cascade correto */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #141414;
+}
+::-webkit-scrollbar-thumb {
+  background: #C0392B;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #A93226;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    scrollbar-width: thin;
+    scrollbar-color: #C0392B #141414;
   }
   body {
     @apply bg-background text-foreground;
     background-color: #0D0D0D;
     color: #F5F5F5;
-  }
-  html {
-    @apply font-sans;
   }
 }

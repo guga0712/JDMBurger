@@ -88,6 +88,7 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
   /* ── Submission ── */
   const [submitting, setSubmitting] = useState(false)
   const [modal, setModal] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
+  const [clienteError, setClienteError] = useState(false)
 
   /* ── Cart helpers ── */
   function increment(produto: Produto) {
@@ -136,6 +137,7 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
     setBusca('')
     setShowDropdown(false)
     setShowQuickAdd(false)
+    setClienteError(false)
   }
 
   function handleClearCliente() {
@@ -209,6 +211,10 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
   /* ── Submit ── */
   async function handleSubmit() {
     if (!canSubmit) return
+    if (!clienteId) {
+      setClienteError(true)
+      return
+    }
     setSubmitting(true)
     try {
       const res = await fetch('/api/pedidos', {
@@ -366,8 +372,13 @@ export function NovoPedidoForm({ produtos, clientes: clientesIniciais }: Props) 
         <div className="w-full lg:w-80 xl:w-96 shrink-0 space-y-4 lg:overflow-y-auto">
           <h2 className='text-lg font-bold text-foreground'>Resumo do pedido</h2>
           {/* Cliente */}
-          <div className="bg-card border border-border rounded-xl p-4 space-y-3">
-            <h3 className="text-sm font-semibold text-foreground">Cliente</h3>
+          <div className={`bg-card border rounded-xl p-4 space-y-3 transition-colors ${clienteError ? 'border-destructive' : 'border-border'}`}>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-semibold text-foreground">Cliente</h3>
+              {clienteError && (
+                <span className="text-xs text-destructive font-medium">Obrigatório</span>
+              )}
+            </div>
 
             {clienteId ? (
               <div className="flex items-center justify-between gap-2 bg-primary/10 border border-primary/20 rounded-lg px-3 py-2">
