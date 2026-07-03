@@ -89,7 +89,8 @@ export async function POST(request: Request) {
     })
 
     return NextResponse.json(pedido, { status: 201 })
-  } catch {
+  } catch (err) {
+    console.error('[POST /api/pedidos]', err)
     return NextResponse.json({ error: 'Erro ao criar pedido' }, { status: 500 })
   }
 }
