@@ -20,23 +20,17 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         try {
           const parsed = credentialsSchema.safeParse(credentials)
-          if (!parsed.success) {
-            console.error('[auth] zod parse failed:', parsed.error)
-            return null
-          }
+          if (!parsed.success) return null
 
           const { email, password } = parsed.data
-          console.log('[auth] attempting login for:', email)
 
           const user = await prisma.usuario.findUnique({
             where: { email },
           })
-          console.log('[auth] user found:', !!user)
 
           if (!user) return null
 
           const passwordMatch = await bcrypt.compare(password, user.senhaHash)
-          console.log('[auth] password match:', passwordMatch)
 
           if (!passwordMatch) return null
 

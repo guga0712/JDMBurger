@@ -8,6 +8,12 @@ const updateSchema = z.object({
   status: z.enum(['recebido', 'preparando', 'pronto', 'entregue']),
 })
 
+const statusPermitidosPorPapel = {
+  cozinha: ['preparando', 'pronto'],
+  atendente: ['entregue'],
+  admin: ['recebido', 'preparando', 'pronto', 'entregue'],
+} as const
+
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -26,9 +32,25 @@ export async function PATCH(
       return NextResponse.json({ error: 'Dados inválidos' }, { status: 400 })
     }
 
+    const { status } = parsed.data
+    const papel = session.user.papel
+    const permitidos = statusPermitidosPorPapel[papel] as readonly string[]
+
+    if (!permitidos.includes(status)) {
+      return NextResponse.json(
+        { error: 'Sem permissão para definir este status' },
+        { status: 403 }
+      )
+    }
+
+    const pedidoExiste = await prisma.pedido.findUnique({ where: { id } })
+    if (!pedidoExiste) {
+      return NextResponse.json({ error: 'Pedido não encontrado' }, { status: 404 })
+    }
+
     const pedido = await prisma.pedido.update({
       where: { id },
-      data: { status: parsed.data.status },
+      data: { status },
     })
 
     return NextResponse.json(pedido)

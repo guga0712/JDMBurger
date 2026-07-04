@@ -19,6 +19,11 @@ const createSchema = z.object({
 
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
     const pedidos = await prisma.pedido.findMany({
       orderBy: { criadoEm: 'desc' },
       include: {

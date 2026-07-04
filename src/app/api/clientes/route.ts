@@ -12,8 +12,13 @@ const createSchema = z.object({
 
 export async function GET(request: Request) {
   try {
+    const session = await getServerSession(authOptions)
+    if (!session) {
+      return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+    }
+
     const { searchParams } = new URL(request.url)
-    const busca = searchParams.get('busca')?.trim()
+    const busca = searchParams.get('busca')?.trim().slice(0, 50)
 
     const clientes = await prisma.cliente.findMany({
       where: busca
