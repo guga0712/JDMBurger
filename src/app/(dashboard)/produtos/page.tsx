@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Plus } from 'lucide-react'
+import { Plus, LayoutList } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { ProdutoCard } from '@/components/ProdutoCard'
 import { Categoria } from '@prisma/client'
@@ -42,13 +42,22 @@ export default async function ProdutosPage({ searchParams }: { searchParams: Sea
       {/* Header */}
       <div className="flex items-center justify-between gap-3">
         <h1 className="text-xl md:text-2xl font-bold text-foreground">Produtos</h1>
-        <Link
-          href="/produtos/novo"
-          className="inline-flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap active:scale-[0.98]"
-        >
-          <Plus size={15} strokeWidth={2.5} />
-          Novo produto
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href="/produtos/alteracao-em-massa"
+            className="inline-flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg bg-card border border-border text-foreground text-sm font-medium hover:bg-muted transition-colors whitespace-nowrap active:scale-[0.98]"
+          >
+            <LayoutList size={15} strokeWidth={2} />
+            Alteração em massa
+          </Link>
+          <Link
+            href="/produtos/novo"
+            className="inline-flex items-center gap-2 px-3 py-2 md:px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap active:scale-[0.98]"
+          >
+            <Plus size={15} strokeWidth={2.5} />
+            Novo produto
+          </Link>
+        </div>
       </div>
 
       {/* Category filter tabs */}

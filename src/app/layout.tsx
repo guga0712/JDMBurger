@@ -20,7 +20,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" className={`${roboto.variable} dark h-full antialiased`}>
-      <body className="h-full flex flex-col">{children}</body>
+      <body className="h-full flex flex-col overflow-hidden">{children}</body>
     </html>
   );
 }

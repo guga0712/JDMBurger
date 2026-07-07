@@ -10,9 +10,9 @@ export default async function DashboardLayout({
   const session = await getServerSession(authOptions)
 
   return (
-    <div className="min-h-screen flex flex-col md:flex-row bg-background">
+    <div className="h-screen flex flex-col md:flex-row bg-background overflow-hidden">
       <Sidebar userName={session?.user?.nome} />
-      <main className="flex-1 p-4 md:p-6 overflow-auto">{children}</main>
+      <main className="flex-1 min-w-0 p-4 md:p-6 overflow-y-auto overflow-x-hidden">{children}</main>
     </div>
   )
 }

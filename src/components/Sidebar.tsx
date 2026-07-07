@@ -42,7 +42,7 @@ export function Sidebar({ userName }: Props) {
           <div className="h-px bg-gradient-to-r from-primary/50 to-transparent mt-1" />
         </div>
 
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 px-3 py-4 space-y-1">
           {NAV_ITEMS.map(({ href, label, icon: Icon, highlight, disable }) => {
             const isActive =
               href === '/pedidos'
