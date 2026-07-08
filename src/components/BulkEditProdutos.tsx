@@ -19,10 +19,10 @@ type Produto = {
 type ProdutoEditavel = Produto & { precoStr: string; dirty: boolean; uploadando: boolean }
 
 const CATEGORIAS = [
-  { value: 'lanches', label: 'Lanches' },
-  { value: 'bebidas', label: 'Bebidas' },
-  { value: 'acompanhamento', label: 'Acompanhamento' },
-  { value: 'doces', label: 'Doces' },
+  { value: 'lanches', label: 'Lanches 🍔' },
+  { value: 'bebidas', label: 'Bebidas 🥤' },
+  { value: 'acompanhamento', label: 'Acompanhamento 🍟' },
+  { value: 'doces', label: 'Doces 🍰' },
 ]
 
 export default function BulkEditProdutos({ produtos }: { produtos: Produto[] }) {
