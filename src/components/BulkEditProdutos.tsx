@@ -137,151 +137,151 @@ export default function BulkEditProdutos({ produtos }: { produtos: Produto[] }) 
 
       {/* Tabela */}
       <div className="rounded-xl border border-border overflow-hidden">
-          <table className="w-full text-sm table-fixed">
-            <thead>
-              <tr className="border-b border-border bg-muted/40">
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-16">
-                  Foto
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Nome
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-36">
-                  Categoria
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28">
-                  Preço (R$)
-                </th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24">
-                  Disponível
-                </th>
-                <th className="w-10" />
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {itens.map((item) => (
-                <tr
-                  key={item.id}
-                  className={`transition-colors ${item.dirty ? 'bg-primary/5' : 'bg-card'}`}
-                >
-                  {/* Foto */}
-                  <td className="px-4 py-3">
-                    <button
-                      type="button"
-                      onClick={() => fileRefs.current[item.id]?.click()}
-                      disabled={item.uploadando}
-                      className="relative w-11 h-11 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center hover:border-primary/50 transition-colors group"
-                      title="Trocar foto"
-                    >
-                      {item.uploadando ? (
-                        <span className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-                      ) : item.imagemUrl ? (
-                        <>
-                          <Image
-                            src={item.imagemUrl}
-                            alt={item.nome}
-                            fill
-                            className="object-cover"
-                            unoptimized
-                          />
-                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <Upload size={12} className="text-white" />
-                          </div>
-                        </>
-                      ) : (
-                        <Upload
-                          size={14}
-                          className="text-muted-foreground group-hover:text-primary transition-colors"
+        <table className="w-full text-sm table-fixed">
+          <thead>
+            <tr className="border-b border-border bg-muted/40">
+              <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-16">
+                Foto
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                Nome
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-36">
+                Categoria
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-28">
+                Preço (R$)
+              </th>
+              <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider w-24">
+                Disponível
+              </th>
+              <th className="w-10" />
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {itens.map((item) => (
+              <tr
+                key={item.id}
+                className={`transition-colors ${item.dirty ? 'bg-primary/5' : 'bg-card'}`}
+              >
+                {/* Foto */}
+                <td className="px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => fileRefs.current[item.id]?.click()}
+                    disabled={item.uploadando}
+                    className="relative w-11 h-11 rounded-lg overflow-hidden border border-border bg-muted flex items-center justify-center hover:border-primary/50 transition-colors group"
+                    title="Trocar foto"
+                  >
+                    {item.uploadando ? (
+                      <span className="h-4 w-4 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+                    ) : item.imagemUrl ? (
+                      <>
+                        <Image
+                          src={item.imagemUrl}
+                          alt={item.nome}
+                          fill
+                          className="object-cover"
+                          unoptimized
                         />
-                      )}
-                    </button>
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      className="sr-only"
-                      ref={(el) => {
-                        fileRefs.current[item.id] = el
-                      }}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0]
-                        if (file) handleUpload(item.id, file)
-                      }}
+                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Upload size={12} className="text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <Upload
+                        size={14}
+                        className="text-muted-foreground group-hover:text-primary transition-colors"
+                      />
+                    )}
+                  </button>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    className="sr-only"
+                    ref={(el) => {
+                      fileRefs.current[item.id] = el
+                    }}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0]
+                      if (file) handleUpload(item.id, file)
+                    }}
+                  />
+                </td>
+
+                {/* Nome */}
+                <td className="px-4 py-3">
+                  <Input
+                    value={item.nome}
+                    onChange={(e) => atualizar(item.id, { nome: e.target.value })}
+                    className="h-8 text-sm"
+                    maxLength={100}
+                  />
+                </td>
+
+                {/* Categoria */}
+                <td className="px-4 py-3">
+                  <select
+                    value={item.categoria}
+                    onChange={(e) => atualizar(item.id, { categoria: e.target.value })}
+                    className="bg-background border border-border text-foreground rounded-md px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-ring"
+                  >
+                    {CATEGORIAS.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </td>
+
+                {/* Preço */}
+                <td className="px-4 py-3">
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={item.precoStr}
+                    onChange={(e) =>
+                      atualizar(item.id, { precoStr: e.target.value })
+                    }
+                    className="h-8 text-sm"
+                    placeholder="0.00"
+                  />
+                </td>
+
+                {/* Disponível */}
+                <td className="px-4 py-3">
+                  <button
+                    type="button"
+                    role="switch"
+                    aria-checked={item.disponivel}
+                    onClick={() => atualizar(item.id, { disponivel: !item.disponivel })}
+                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background ${item.disponivel ? 'bg-primary' : 'bg-muted'
+                      }`}
+                  >
+                    <span
+                      className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform ${item.disponivel ? 'translate-x-5' : 'translate-x-0'
+                        }`}
                     />
-                  </td>
+                  </button>
+                </td>
 
-                  {/* Nome */}
-                  <td className="px-4 py-3">
-                    <Input
-                      value={item.nome}
-                      onChange={(e) => atualizar(item.id, { nome: e.target.value })}
-                      className="h-8 text-sm"
-                      maxLength={100}
-                    />
-                  </td>
-
-                  {/* Categoria */}
-                  <td className="px-4 py-3">
-                    <select
-                      value={item.categoria}
-                      onChange={(e) => atualizar(item.id, { categoria: e.target.value })}
-                      className="bg-background border border-border text-foreground rounded-md px-2 py-1.5 text-sm w-full focus:outline-none focus:ring-2 focus:ring-ring"
-                    >
-                      {CATEGORIAS.map((cat) => (
-                        <option key={cat.value} value={cat.value}>
-                          {cat.label}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-
-                  {/* Preço */}
-                  <td className="px-4 py-3">
-                    <Input
-                      type="text"
-                      inputMode="decimal"
-                      value={item.precoStr}
-                      onChange={(e) =>
-                        atualizar(item.id, { precoStr: e.target.value })
-                      }
-                      className="h-8 text-sm"
-                      placeholder="0.00"
-                    />
-                  </td>
-
-                  {/* Disponível */}
-                  <td className="px-4 py-3">
+                {/* Reset */}
+                <td className="px-2 py-3">
+                  {item.dirty && (
                     <button
                       type="button"
-                      role="switch"
-                      aria-checked={item.disponivel}
-                      onClick={() => atualizar(item.id, { disponivel: !item.disponivel })}
-                      className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background ${item.disponivel ? 'bg-primary' : 'bg-muted'
-                        }`}
+                      onClick={() => resetar(item.id)}
+                      title="Desfazer alterações"
+                      className="text-muted-foreground hover:text-foreground transition-colors p-1"
                     >
-                      <span
-                        className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-lg transition-transform ${item.disponivel ? 'translate-x-5' : 'translate-x-0'
-                          }`}
-                      />
+                      <RotateCcw size={14} />
                     </button>
-                  </td>
-
-                  {/* Reset */}
-                  <td className="px-2 py-3">
-                    {item.dirty && (
-                      <button
-                        type="button"
-                        onClick={() => resetar(item.id)}
-                        title="Desfazer alterações"
-                        className="text-muted-foreground hover:text-foreground transition-colors p-1"
-                      >
-                        Redefinir<RotateCcw size={14} />
-                      </button>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   )
