@@ -105,7 +105,7 @@ export default function DashboardChart({ dadosIniciais }: Props) {
               }}
               labelStyle={{ color: '#aaa' }}
               itemStyle={{ color: '#fff' }}
-              formatter={(v: number | string) => [v, 'Pedidos']}
+              formatter={(v) => [v ?? '', 'Pedidos']}
             />
             <Area
               type="monotone"
